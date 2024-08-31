@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Episode Suggestion</title>
+    <style>
+        /* Inline CSS for styling */
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 20px;
+            background-color: #ffd8ff;
+            transition: background-color 0.5s ease;
+        }
+
+        .alignRight {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 20px;
+            background-color: #ffd8ff;
+            transition: background-color 0.5s ease;
+        }
+
+        select, button {
+            margin: 10px;
+            padding: 10px;
+            border-radius: 8px;
+            transition-duration: 0.4s;
+        }
+
+        select:hover {
+            background-color: #eee;
+        }
+
+        button {
+            transition-duration: 0.4s;
+        }
+
+        button:hover {
+            background-color: #156c7b;
+            color: white;
+        }
+
+        #result {
+            margin-top: 20px;
+            font-size: 1.2em;
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+        .animate {
+            animation: fadeInUp 1s ease-out;
+        }
+        .bg-animate {
+            animation: backgroundColorChange 1s ease-out;
+        }
+
+        @keyframes fadeInUp {
+    0% {
+        opacity: 0;
+        transform: translateY(20px);
+        background-color: #ffd8ff; /* Original background color */
+    }
+    50% {
+        background-color: #ffebff; /* Lighter or darker shade */
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+        background-color: #ffd8ff; /* Original background color */
+    }
+}
+
+@keyframes backgroundColorChange {
+    0% {
+        background-color: #ffd8ff; /* Original background color */
+    }
+    50% {
+        background-color: #ffebff; /* Lighter or darker shade */
+    }
+    100% {
+        background-color: #ffd8ff; /* Original background color */
+    }
+}
+        /* Modal Styles */
+        .modal {
+            display: none; /* Hidden by default */
+            position: fixed; /* Stay in place */
+            z-index: 1; /* Sit on top */
+            left: 0;
+            top: 0;
+            width: 100%; /* Full width */
+            height: 100%; /* Full height */
+            overflow: auto; /* Enable scroll if needed */
+            background-color: rgb(0,0,0); /* Fallback color */
+            background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+            padding-top: 60px;
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 5% auto; /* 15% from the top and centered */
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%; /* Could be more or less, depending on screen size */
+            border-radius: 5px;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        .bg-yes {
+            background-color: #2ecc71; /* Green for Yes */
+        }
+
+        .bg-no {
+            background-color: #e74c3c; /* Red for No */
+        }
+    </style>
+        <link rel="stylesheet" href="css/scratch.css">
+</head>
+<body>
+
+    <div class="header">
+        <a href="index.html">Resume</a> |
+        <a href="scratch.html">Scratch Page</a> |
+        <a href="tableau.html">Tableau Chart</a> |
+        <a href="#">AI Web App</a>
+    </div>
+    <div class="main" style="text-align: center;">
+        <h1>Episode Suggestion</h1>
+        <div>
+            <label for="show">Choose a show:</label>
+            <select id="show">
+                <option value="phineasAndFerb">Phineas and Ferb</option>
+                <option value="gravityFalls">Gravity Falls</option>
+            </select>
+            <button id="suggestButton">Get Episode Suggestion</button>
+        </div>
+        <div id="result">
+            <!-- Episode suggestion will appear here -->
+        </div>
+        <!-- The Modal -->
+        <div id="myModal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <p>Will you watch this episode?</p>
+                <button id="confirmYes">Yes</button>
+                <button id="confirmNo">No</button>
+            </div>
+        </div>
+    </div>
+    <script>
+        // Inline JavaScript for functionality
+        const episodes = {
+            phineasAndFerb: [
+                "Rollercoaster",
+                "Lawn Gnome Beach Party of Terror",
+                "Flop Starz",
+                "The Fast and the Phineas",
+                "Lights, Candace, Action!",
+                "Raging Bully",
+                "Candace Loses Her Head",
+                "I, Brobot",
+                "Run Away Runway",
+                "The Magnificent Few",
+                "S'Winter",
+                "Jerk De Soleil",
+                "Are You My Mummy?",
+                "Ready for the Bettys",
+                "I Scream, You Scream",
+                "Toy to the World",
+                "Get That Bigfoot Outa My Face!",
+                "It's a Mud, Mud, Mud, Mud World",
+                "Journey to the Center of Candace",
+                "It's About Time!",
+                "Dude, We're Getting the Band Back Together",
+                "Tree to Get Ready",
+                "The Ballad of Badbeard",
+                "Greece Lightning",
+                "Leave the Busting to Us!",
+                "Mom's Birthday",
+                "Crack That Whip",
+                "The Best Lazy Day Ever",
+                "Boyfriend From 27,000 B.C.",
+                "Voyage to the Bottom of Buford",
+                "A Hard Day's Knight",
+                "Traffic Cam Caper",
+                "Bowl-R-Ama Drama",
+                "Got Game?",
+                "Comet Kermillian",
+                "Put That Putter Away",
+                "Does This Duckbill Make Me Look Fat?",
+                "The Flying Fishmonger",
+                "One Good Scare Ought to Do It!",
+                "The Monster of Phineas-n-Ferbenstein",
+                "Oil on Candace",
+                "Out of Toon",
+                "Hail Doofania!",
+                "Out to Launch",
+                "Phineas and Ferb Get Busted!",
+                "Unfair Science Fair",
+                "Unfair Science Fair Redux (Another Story)",
+                "The Lake Nose Monster",
+                "Interview With a Platypus",
+                "Tip of the Day",
+                "Attack of the 50 Foot Sister",
+                "Backyard Aquarium",
+                "Day of the Living Gelatin",
+                "Elementary My Dear Stacy",
+                "Don't Even Blink",
+                "Chez Platypus",
+                "Perry Lays an Egg",
+                "Gaming the System",
+                "The Chronicles of Meap",
+                "Thaddeus and Thor",
+                "De Plane! De Plane!",
+                "Let's Take a Quiz",
+                "At the Car Wash",
+                "Oh, There You Are, Perry",
+                "Swiss Family Phineas",
+                "Hide and Seek",
+                "That Sinking Feeling",
+                "The Baljeatles",
+                "Vanessassary Roughness",
+                "No More Bunny Business",
+                "Spa Day",
+                "Phineas and Ferb's Quantum Boogaloo",
+                "Phineas and Ferb Musical Cliptastic Countdown",
+                "Bubble Boys",
+                "Isabella and the Temple of Sap",
+                "Cheer Up Candace",
+                "Fireside Girl Jamboree",
+                "The Bully Code",
+                "Finding Mary McGuffin",
+                "Picture This",
+                "Nerdy Dancin'",
+                "What Do It Do?",
+                "Atlantis",
+                "Phineas and Ferb Christmas Vacation!",
+                "Just Passing Through",
+                "Candace's Big Day",
+                "I Was a Middle Aged Robot",
+                "Suddenly Suzy",
+                "Undercover Carl",
+                "Hip Hip Parade",
+                "Invasion of the Ferb Snatchers",
+                "Ain't No Kiddie Ride",
+                "Not Phineas and Ferb",
+                "Phineas and Ferb-Busters!",
+                "The Lizard Whisperer",
+                "Robot Rodeo",
+                "The Beak",
+                "She's the Mayor",
+                "The Lemonade Stand",
+                "Phineas and Ferb Hawaiian Vacation",
+                "Phineas and Ferb: Summer Belongs to You!",
+                "Nerds of a Feather",
+                "Wizard of Odd",
+                "We Call it Maze",
+                "Ladies and Gentlemen, Meet Max Modem!",
+                "The Secret of Success",
+                "The Doof Side of the Moon",
+                "Split Personality",
+                "Brain Drain",
+                "Rollercoaster: The Musical!",
+                "Make Play",
+                "Candace Gets Busted",
+                "The Great Indoors",
+                "Canderemy",
+                "Run, Candace, Run",
+                "Last Train to Bustville",
+                "Phineas' Birthday Clip-O-Rama!",
+                "The Belly of the Beast",
+                "Moon Farm",
+                "Ask a Foolish Question",
+                "Misperceived Monotreme",
+                "Candace Disconnected",
+                "Magic Carpet Ride",
+                "Bad Hair Day",
+                "Meatloaf Surprise",
+                "Phineas and Ferb Interrupted",
+                "A Real Boy",
+                "Mommy Can You Hear Me?",
+                "Road Trip",
+                "Phineas and Ferb the Movie: Across the 2nd Dimension",
+                "Tour de Ferb",
+                "Skiddley Whiffers",
+                "My Fair Goalie",
+                "Bullseye!",
+                "That's the Spirit",
+                "The Curse of Candace",
+                "Escape from Phineas Tower",
+                "Lotsa Latkes",
+                "Ferb Latin",
+                "A Phineas and Ferb Family Christmas",
+                "Tri-Stone Area",
+                "Doof Dynasty",
+                "Excaliferb",
+                "Phineas and Ferb and the Temple of Juatchadoon",
+                "Monster from the Id",
+                "Gi-Ants",
+                "The Remains of the Platypus",
+                "Mom's in the House",
+                "Perry The Actorpus",
+                "Let's Bounce",
+                "Bully Bromance Breakup",
+                "Quietest Day Ever",
+                "The Doonkelberry Imperative",
+                "Meapless in Seattle",
+                "Delivery of Destiny",
+                "Buford Confidential",
+                "The Mom Attractor",
+                "Cranius Maximus",
+                "Agent Doof",
+                "Minor Monogram",
+                "What A Croc!",
+                "Sleepwalk Surprise",
+                "Sci-Fi Pie Fly",
+                "Sipping with the Enemy",
+                "Tri-State Treasure: Boot of Secrets",
+                "Doofapus",
+                "Norm Unleashed",
+                "Where's Perry?",
+                "Where's Perry? (Part Two)",
+                "Ferb TV",
+                "When Worlds Collide",
+                "What'd I Miss?",
+                "Road to Danville",
+                "This Is Your Backstory",
+                "Blackout!",
+                "For Your Ice Only",
+                "Happy New Year!",
+                "Fly On the Wall",
+                "Bully Bust",
+                "My Sweet Ride",
+                "Der Kinderlumper",
+                "Sidetracked",
+                "Primal Perry",
+                "Mind Share",
+                "Backyard Hodge Podge",
+                "Bee Day",
+                "Bee Story",
+                "Great Balls Of Water",
+                "Where's Pinky?",
+                "Knot My Problem",
+                "Just Desserts",
+                "La Candace-Cabra",
+                "Happy Birthday, Isabella",
+                "Love at First Byte",
+                "One Good Turn",
+                "Phineas and Ferb: Mission Marvel",
+                "Thanks But No Thanks",
+                "Troy Story",
+                "Druselsteinoween",
+                "Terrifying Tri-State Trilogy of Terror",
+                "Face Your Fear",
+                "Cheers for Fears",
+                "Steampunx",
+                "Just Our Luck",
+                "Return Policy",
+                "Live and Let Drive",
+                "Phineas and Ferb Save Summer",
+                "Father's Day",
+                "Imperfect Storm",
+                "The Return of the Rogue Rabbit",
+                "It's No Picnic",
+                "The Klimpaloon Ultimatum",
+                "Operation Crumb Cake",
+                "Mandace",
+                "Phineas and Ferb: Star Wars",
+                "Lost in Danville",
+                "The Inator Method",
+                "Night of the Living Pharmacists",
+                "Tales from the Resistance: Back to the 2nd Dimension",
+                "Doof 101",
+                "Act Your Age",
+                "Last Day of Summer",
+                "O.W.C.A. Files"
+            ],
+            gravityFalls: [
+                "Tourist Trapped",
+                "The Legend of the Gobblewonker",
+                "Headhunters",
+                "The Hand That Rocks the Mabel",
+                "The Inconveniencing",
+                "Dipper vs. Manliness",
+                "Double Dipper",
+                "Irrational Treasure",
+                "The Time Traveler's Pig",
+                "Fight Fighters",
+                "Little Dipper",
+                "Summerween",
+                "Boss Mabel",
+                "Bottomless Pit!",
+                "The Deep End",
+                "Carpet Diem",
+                "Boyz Crazy",
+                "Land Before Swine",
+                "Dreamscaperers (Part 1)",
+                "Scary-oke",
+                "Into the Bunker",
+                "The Golf War",
+                "Sock Opera",
+                "Soos and the Real Girl",
+                "Little Gift Shop of Horrors",
+                "Society of the Blind Eye",
+                "Blendin's Game",
+                "The Love God",
+                "Northwest Mansion Mystery",
+                "Not What He Seems",
+                "A Tale of Two Stans",
+                "Dungeons, Dungeons, and More Dungeons",
+                "The Stanchurian Candidate",
+                "The Last Mabelcorn",
+                "Roadside Attraction",
+                "Dipper and Mabel vs. the Future",
+                "Weirdmageddon Part 1",
+                "Weirdmageddon 2: Escape From Reality",
+                "Weirdmageddon 3: Take Back The Falls",
+                "Gideon Rises (Part 2)"
+                // Add more episodes here
+            ]
+        };
+
+        document.getElementById('suggestButton').addEventListener('click', () => {
+            const show = document.getElementById('show').value;
+            const episodeList = episodes[show];
+            const randomEpisode = episodeList[Math.floor(Math.random() * episodeList.length)];
+            const modal = document.getElementById('myModal');
+            const span = document.getElementsByClassName('close')[0];
+            const confirmYes = document.getElementById('confirmYes');
+            const confirmNo = document.getElementById('confirmNo');
+            const resultElement = document.getElementById('result');
+            document.body.classList.remove('bg-no');
+            document.body.classList.remove('bg-yes');
+            // Update the text
+            resultElement.innerText = `You should watch: ${randomEpisode}`;
+            
+            // Reset animation
+            resultElement.classList.remove('animate');
+            
+            // Trigger a reflow to restart animation
+            void resultElement.offsetWidth; // This line forces a reflow
+            
+            // Add the animation class
+            resultElement.classList.add('animate');
+            // Apply background color animation to the body
+            document.body.classList.remove('bg-animate');
+            
+            // Trigger a reflow to restart the background animation
+            void document.body.offsetWidth; // Forces reflow
+            
+            // Add the background animation class
+            document.body.classList.add('bg-animate');
+
+            // Delay showing the modal
+            setTimeout(() => {
+                modal.style.display = 'block';
+            }, 5000); // 5000 milliseconds = 5 seconds
+
+        // When the user clicks on <span> (x), close the modal
+        span.onclick = function() {
+            modal.style.display = 'none';
+        }
+
+        // When the user clicks on "Yes", close the modal and show a confirmation
+        confirmYes.onclick = function() {
+            document.body.classList.add('bg-yes');
+            document.body.classList.remove('bg-no'); // Remove the red background if it was applied
+            modal.style.display = 'none';
+            resultElement.innerText = `YAY! I hope you enjoy.`;
+        }
+
+        // When the user clicks on "No", close the modal and change background color to red
+        confirmNo.onclick = function() {
+            document.body.classList.add('bg-no');
+            document.body.classList.remove('bg-yes'); // Remove the green background if it was applied
+            resultElement.innerText = `Well, then why did you ask??`;
+            modal.style.display = 'none';
+        }
+
+        // When the user clicks anywhere outside of the modal, close it
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                modal.style.display = 'none';
+            }
+        }
+
+            
+        });
+    </script>
+</body>
+</html>
