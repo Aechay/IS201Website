@@ -39,7 +39,7 @@ a {
 }
 a:hover {
     text-decoration: underline;
-    color: maroon;
+    color: #800000;
 }
 a:visited {
     color: #156c7b;
