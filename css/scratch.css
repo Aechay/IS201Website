@@ -42,7 +42,7 @@ a:hover {
     color: #800000;
 }
 a:visited {
-    color: #156c7b;
+    /* color: #800000; */
 }
 .bold {
     font-weight: bold;
